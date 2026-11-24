@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Projetos em net8.0 e testes em net9.0: o SDK 9 compila os dois.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Restore
+        run: |
+          dotnet restore MindNose.Tests/MindNose.Tests.csproj
+          dotnet restore MindNose.Presentation/MindNose.Presentation.csproj
+
+      - name: Build API
+        run: dotnet build MindNose.Presentation/MindNose.Presentation.csproj --no-restore
+
+      # So testes unitarios: Integration e E2E precisam de Neo4j e chave do OpenRouter.
+      - name: Unit tests
+        run: dotnet test MindNose.Tests/MindNose.Tests.csproj --no-restore --filter "FullyQualifiedName~MindNose.Tests.Unit"
