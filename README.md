@@ -1,4 +1,7 @@
 # MindNose
+
+[![CI](https://github.com/gabrielsouza-dev/MindNose/actions/workflows/ci.yml/badge.svg)](https://github.com/gabrielsouza-dev/MindNose/actions/workflows/ci.yml)
+
 Exploração recursiva de termos ligados a um dominio intitulado.
 
 Tecnologias:
